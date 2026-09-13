@@ -255,22 +255,23 @@ $(BUILD_DIR)/$(PACKAGE_ZLIB)/Makefile: \
 	mkdir -p $(dir $(@D))
 	rm -rf $(@D)
 	cp -r $(<D) $(@D)
-	cd $(@D) && ./configure \
-		--prefix=$(PWD)/$(INSTALL_DIR) \
-		--libdir=$(PWD)/$(INSTALL_DIR)/lib \
-		--static \
+	cd $(@D) && \
+		CHOST=arm-linux-gnueabihf \
 		CC="$(CC)" \
 		AR="$(AR)" \
-		RANLIB="$(RANLIB)"
+		RANLIB="$(RANLIB)" \
+		./configure \
+		--prefix=$(PWD)/$(INSTALL_DIR) \
+		--libdir=$(PWD)/$(INSTALL_DIR)/lib \
+		--static
 
 # zlib does not accept CFLAGS in its configure script.
-# Pass the cross-compiler and ARM flags when building.
+# Pass the cross compiler and ARM flags when building.
 MAKEVAR_OVERRIDE_ZLIB:= \
 	CC="$(CC)" \
 	AR="$(AR)" \
 	RANLIB="$(RANLIB)" \
 	CFLAGS="$(_CFLAGS)"
-
 # Don't configure GLEW.
 # GLEW does not support building outside of the source tree, so just copy
 # everything over (it's a small package).
