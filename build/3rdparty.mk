@@ -160,7 +160,11 @@ endef
 
 # Build.
 $(BUILD_TARGETS): $(TIMESTAMP_DIR)/build-%: $(BUILD_DIR)/%/Makefile
-	$(if $(filter $(PACKAGE_GLEW),$*),$(BUILD_COMMAND_GLEW),$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)))
+	if [ "$*" = "$(PACKAGE_GLEW)" ]; then \
+		$(MAKE) -C $(<D) glew.lib.static $(MAKEVAR_OVERRIDE_GLEW); \
+	else \
+		$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)); \
+	fi
 	mkdir -p $(@D)
 	touch $@
 
