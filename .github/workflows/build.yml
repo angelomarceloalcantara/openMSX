@@ -155,6 +155,20 @@ jobs:
           rm -rf derived/arm-linux-opt-3rd/3rdparty
 
       # ----------------------------------------------------------
+      # Debug GLEW/OpenGL
+      # ----------------------------------------------------------
+      - name: Debug GLEW/OpenGL link flags
+        run: |
+          echo "=== LIBRARY_LINK_FLAGS ==="
+          grep -R "LIBRARY_LINK_FLAGS" derived/arm-linux-opt-3rd/config 2>/dev/null || true
+          
+          echo "=== GLEW files ==="
+          find derived/arm-linux-opt-3rd/3rdparty -iname '*glew*' -o -iname 'libGLEW*' 2>/dev/null | head -50
+          
+          echo "=== components_defs.mk ==="
+          grep -nEi 'glew|opengl|gl' derived/arm-linux-opt-3rd/config/components_defs.mk 2>/dev/null || true
+
+      # ----------------------------------------------------------
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
