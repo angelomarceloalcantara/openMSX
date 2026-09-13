@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+
+  # ============================================================
+  # Linux x86_64
+  # ============================================================
+  build-x86_64:
     runs-on: ubuntu-24.04
 
     steps:
@@ -60,10 +64,101 @@ jobs:
           echo "Generated files:"
           find derived -type f -maxdepth 6 -print | sort
 
-      - name: Upload openMSX
+      - name: Verify architecture
+        run: |
+          echo "Architecture:"
+          find derived -type f -executable -exec file {} \;
+
+      - name: Upload openMSX x86_64
         uses: actions/upload-artifact@v4
         with:
           name: openMSX-msx2pp-linux-x86_64
           path: |
             derived/**/bindist/**
+          if-no-files-found: error
+
+
+  # ============================================================
+  # Raspberry Pi Zero - ARMv6 / ARMHF
+  # ============================================================
+  build-armhf:
+    runs-on: ubuntu-24.04
+
+    env:
+      OPENMSX_TARGET_CPU: arm
+      OPENMSX_TARGET_OS: linux
+      OPENMSX_FLAVOUR: opt
+
+      CC: arm-linux-gnueabihf-gcc
+      CXX: arm-linux-gnueabihf-g++
+
+      CXXFLAGS: >-
+        -march=armv6
+        -mfpu=vfp
+        -mfloat-abi=hard
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install ARM cross compiler
+        run: |
+          sudo apt-get update
+
+          sudo apt-get install -y \
+            build-essential \
+            gcc-arm-linux-gnueabihf \
+            g++-arm-linux-gnueabihf \
+            make \
+            python3 \
+            pkg-config
+
+      - name: Show ARM compiler
+        run: |
+          echo "GCC:"
+          arm-linux-gnueabihf-gcc --version
+
+          echo
+          echo "G++:"
+          arm-linux-gnueabihf-g++ --version
+
+          echo
+          echo "Compiler architecture:"
+          arm-linux-gnueabihf-g++ \
+            -march=armv6 \
+            -mfpu=vfp \
+            -mfloat-abi=hard \
+            -dM -E - < /dev/null | \
+            grep -E '__arm__|__ARM_ARCH'
+
+      - name: Configure ARM
+        run: |
+          ./configure
+
+      - name: Show openMSX configuration
+        run: |
+          make -f build/main.mk config
+
+      - name: Build static ARM distribution
+        run: |
+          make -j$(nproc) staticbindist
+
+      - name: Find generated files
+        run: |
+          echo "Generated files:"
+          find derived -type f -maxdepth 6 -print | sort
+
+      - name: Verify ARM architecture
+        run: |
+          echo "ARM executables:"
+          find derived -type f -executable -exec file {} \;
+
+      - name: Upload openMSX ARM
+        uses: actions/upload-artifact@v4
+        with:
+          name: openMSX-msx2pp-linux-armhf
+          path: |
+            derived/arm-linux-opt/bindist/**
           if-no-files-found: error
