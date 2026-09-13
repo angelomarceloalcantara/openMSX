@@ -119,11 +119,9 @@ jobs:
         run: |
           echo "GCC:"
           arm-linux-gnueabihf-gcc --version
-
           echo
           echo "G++:"
           arm-linux-gnueabihf-g++ --version
-
           echo
           echo "Compiler architecture:"
           arm-linux-gnueabihf-g++ \
