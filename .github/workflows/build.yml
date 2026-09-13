@@ -164,27 +164,6 @@ jobs:
             PYTHON=python3
 
       # ----------------------------------------------------------
-      # Debug GLEW
-      # ----------------------------------------------------------
-      - name: Debug GLEW
-        run: |
-          echo "===== GLEW BUILD DIRECTORY ====="
-          ls -la derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0
-
-          echo "===== GLEW glxew.h ====="
-          sed -n '80,110p' \
-            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/include/GL/glxew.h
-
-          echo "===== GLEW glew.c ====="
-          sed -n '40,70p' \
-            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/src/glew.c
-
-          echo "===== GLEW references ====="
-          grep -R -n "GLEW_NO_GLX\|glxew.h" \
-            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/include/GL \
-            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/src
-
-      # ----------------------------------------------------------
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
@@ -194,13 +173,6 @@ jobs:
 
           export LIBRARY_PATH="/usr/lib/arm-linux-gnueabihf:/usr/lib/gcc-cross/arm-linux-gnueabihf/13"
           export LDFLAGS="-L/usr/lib/arm-linux-gnueabihf"
-          
-          echo "===== GLEW CONFIG ====="
-          grep -n "GLEW_NO_GLX\|GLEW_NO_GLU" derived/3rdparty/src/glew-2.2.0/include/GL/*.h
-          echo "===== glxew.h ====="
-          sed -n '80,110p' derived/3rdparty/src/glew-2.2.0/include/GL/glxew.h
-          echo "===== glew.c ====="
-          sed -n '40,65p' derived/3rdparty/src/glew-2.2.0/src/glew.c
           
           make V=1 -j8 staticbindist \
             CC=arm-linux-gnueabihf-gcc \
