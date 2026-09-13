@@ -153,7 +153,7 @@ $(INSTALL_BUILD_TARGETS): $(TIMESTAMP_DIR)/install-%: $(TIMESTAMP_DIR)/build-%
 
 # Build GLEW static only.
 # The shared GLEW library requires target-side libGL/libX11,
-# which are not available in the cross-compilation environment.
+# which are not available during ARM cross-compilation.
 $(TIMESTAMP_DIR)/build-$(PACKAGE_GLEW): \
   $(BUILD_DIR)/$(PACKAGE_GLEW)/Makefile
 	$(MAKE) -C $(BUILD_DIR)/$(PACKAGE_GLEW) \
