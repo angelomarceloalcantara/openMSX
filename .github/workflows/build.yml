@@ -1,81 +1,9 @@
-name: Build openMSX MSX2++
+name: Build openMSX MSX2++ - Raspberry Pi Zero
 
 on:
   workflow_dispatch:
 
 jobs:
-
-  # ============================================================
-  # Linux x86_64
-  # ============================================================
-  build-x86_64:
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            g++ \
-            gcc \
-            make \
-            python3 \
-            pkg-config \
-            libasound2-dev \
-            libpulse-dev \
-            libsdl2-dev \
-            libsdl2-ttf-dev \
-            libglew-dev \
-            libpng-dev \
-            libogg-dev \
-            libtheora-dev \
-            libvorbis-dev \
-            tcl-dev \
-            zlib1g-dev \
-            libfontconfig1-dev \
-            libfreetype6-dev \
-            libgl1-mesa-dev \
-            libglu1-mesa-dev
-
-      - name: Show compiler
-        run: |
-          gcc --version
-          g++ --version
-          make --version
-          python3 --version
-
-      - name: Configure
-        run: |
-          ./configure
-
-      - name: Build static distribution
-        run: |
-          make -j$(nproc) staticbindist
-
-      - name: Find generated files
-        run: |
-          echo "Generated files:"
-          find derived -type f -maxdepth 6 -print | sort
-
-      - name: Verify architecture
-        run: |
-          echo "Architecture:"
-          find derived -type f -executable -exec file {} \;
-
-      - name: Upload openMSX x86_64
-        uses: actions/upload-artifact@v4
-        with:
-          name: openMSX-msx2pp-linux-x86_64
-          path: |
-            derived/**/bindist/**
-          if-no-files-found: error
-
 
   # ============================================================
   # Raspberry Pi Zero - ARMv6 / ARMHF
@@ -94,10 +22,10 @@ jobs:
 
       # Raspberry Pi Zero / ARMv6
       #
-      # -march=armv6  -> ARMv6
-      # -marm         -> ARM mode, não Thumb-1
-      # -mfpu=vfp     -> VFP
-      # -mfloat-abi=hard -> hard-float ABI
+      # -march=armv6       -> ARMv6
+      # -marm              -> ARM mode
+      # -mfpu=vfp          -> VFP
+      # -mfloat-abi=hard   -> hard-float ABI
       #
       CFLAGS: >-
         -march=armv6
@@ -111,7 +39,7 @@ jobs:
         -mfpu=vfp
         -mfloat-abi=hard
         -DGLEW_NO_GLU
-    
+
     steps:
 
       # ----------------------------------------------------------
@@ -146,6 +74,7 @@ jobs:
             make \
             python3 \
             pkg-config
+
 
       # ----------------------------------------------------------
       # Verify host/target toolchains
@@ -253,7 +182,7 @@ jobs:
 
 
       # ----------------------------------------------------------
-      # Verify architecture
+      # Verify ARM architecture
       # ----------------------------------------------------------
       - name: Verify ARM architecture
         run: |
