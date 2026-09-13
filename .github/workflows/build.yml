@@ -183,24 +183,6 @@ jobs:
           grep -nEi 'glew|opengl|gl' derived/arm-linux-opt-3rd/config/components_defs.mk 2>/dev/null || true
 
       # ----------------------------------------------------------
-      # Diagnosticar GLEW instalado
-      # ----------------------------------------------------------
-      - name: Diagnosticar GLEW instalado
-        run: |
-          echo "=== GLEW instalado ==="
-          find derived/arm-linux-opt-3rd/3rdparty -type f \
-          \( -name 'libGLEW.a' -o -name 'glew.h' \) \
-          -print 2>/dev/null
-          
-          echo "=== LIBRARY_LINK_FLAGS ==="
-          grep -Rni "LIBRARY_LINK_FLAGS" \
-          derived/arm-linux-opt-3rd/config \
-          derived/arm-linux-opt-3rd 2>/dev/null || true
-          
-          echo "=== components_defs.mk ==="
-          cat derived/arm-linux-opt-3rd/config/components_defs.mk 2>/dev/null || true
-
-      # ----------------------------------------------------------
       # DEBUG GLEW configuration
       # ----------------------------------------------------------
       - name: DEBUG GLEW configuration
