@@ -175,10 +175,10 @@ jobs:
           export LDFLAGS="-L/usr/lib/arm-linux-gnueabihf"
           
           echo "===== glew.c linhas 45-65 ====="
-          sed -n '45,65p' derived/3rdparty/src/glew-2.2.0/src/glew.c
+          sed -n '45,65p' derived/arm-linux-opt-3rd/3rdparty/src/glew-2.2.0/src/glew.c
           
           echo "===== glxew.h linhas 85-105 ====="
-          sed -n '85,105p' derived/3rdparty/src/glew-2.2.0/include/GL/glxew.h
+          sed -n '85,105p' derived/arm-linux-opt-3rd/3rdparty/src/glew-2.2.0/include/GL/glxew.h
           
           make V=1 -j8 staticbindist \
             CC=arm-linux-gnueabihf-gcc \
