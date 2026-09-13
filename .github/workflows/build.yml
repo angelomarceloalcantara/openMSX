@@ -226,7 +226,7 @@ jobs:
       # ----------------------------------------------------------
       - name: Build static ARM distribution
         run: |
-          make V=1 -j$(nproc) staticbindist
+          make V=1 -j8 staticbindist
 
       # ----------------------------------------------------------
       # Show generated files
