@@ -224,6 +224,29 @@ jobs:
             PYTHON=python3
 
       # ----------------------------------------------------------
+      # Verify ARMHF OpenGL/GLEW libraries
+      # ----------------------------------------------------------
+      - name: Verify ARMHF OpenGL GLEW
+        run: |
+          echo "=== ARMHF OpenGL ==="
+          dpkg -L libgl-dev:armhf | grep -E '/GL/|libGL' || true
+
+          echo
+          echo "=== ARMHF GLEW ==="
+          dpkg -L libglew-dev:armhf | grep -E 'glew|GLEW' || true
+
+          echo
+          echo "=== 3rdparty GLEW ==="
+          find derived/arm-linux-opt-3rd/3rdparty/install \
+            -type f \
+            \( -name 'libGLEW.a' -o -name 'libGLEW.so*' \) \
+            -print 2>/dev/null || true
+
+          echo
+          echo "=== generated link flags ==="
+          cat derived/arm-linux-opt-3rd/config/components_defs.mk 2>/dev/null || true
+
+      # ----------------------------------------------------------
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
