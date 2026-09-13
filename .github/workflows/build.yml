@@ -225,8 +225,19 @@ jobs:
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
+        shell: bash
         run: |
-          make V=1 -j8 staticbindist
+          set -e
+
+          export LIBRARY_PATH="/usr/lib/arm-linux-gnueabihf:/usr/lib/gcc-cross/arm-linux-gnueabihf/13"
+
+          export LDFLAGS="-L/usr/lib/arm-linux-gnueabihf"
+
+          make V=1 -j8 staticbindist \
+            CC=arm-linux-gnueabihf-gcc \
+            CXX=arm-linux-gnueabihf-g++ \
+            CXXFLAGS="$CXXFLAGS" \
+            LDFLAGS="$LDFLAGS"
 
       # ----------------------------------------------------------
       # Show generated files
