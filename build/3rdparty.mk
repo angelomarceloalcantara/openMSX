@@ -163,14 +163,22 @@ endef
 
 # Build.
 $(BUILD_TARGETS): $(TIMESTAMP_DIR)/build-%: $(BUILD_DIR)/%/Makefile
-	if [ "$*" = "$(PACKAGE_GLEW)" ]; then \
-		echo "===== CHEGOU AO GLEW ====="; \
-		exit 1; \
-	else \
-		$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)); \
-	fi
-	mkdir -p $(@D)
-	touch $@
+if [ "$*" = "$(PACKAGE_GLEW)" ]; then \
+	echo "===== GLEW BUILD DIRECTORY ====="; \
+	echo "$(<D)"; \
+	echo "===== GLEW glxew.h ====="; \
+	sed -n '80,110p' $(<D)/include/GL/glxew.h; \
+	echo "===== GLEW glew.c ====="; \
+	sed -n '40,70p' $(<D)/src/glew.c; \
+	echo "===== GLEW REFERENCES ====="; \
+	grep -R -n "GLEW_NO_GLX\|glxew.h" $(<D)/include/GL $(<D)/src; \
+	echo "===== GLEW COMPILE ====="; \
+	$(MAKE) -C $(<D) glew.lib.static $(MAKEVAR_OVERRIDE_GLEW); \
+else \
+	$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)); \
+fi
+mkdir -p $(@D)
+touch $@
 
 # Configure pkg-config.
 $(BUILD_DIR)/$(PACKAGE_PKG_CONFIG)/Makefile: \
