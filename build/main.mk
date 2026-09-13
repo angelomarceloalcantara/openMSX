@@ -182,6 +182,8 @@ $(call BOOLCHECK,USE_SYMLINK)
 # Get CPU specific flags.
 TARGET_FLAGS+=$(shell $(PYTHON) build/cpu2flags.py $(OPENMSX_TARGET_CPU))
 
+# Add compiler flags supplied externally (e.g. cross-compilation flags).
+TARGET_FLAGS+=$(CFLAGS)
 
 # Flavours
 # ========
