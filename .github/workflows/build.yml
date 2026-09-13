@@ -200,6 +200,17 @@ jobs:
           -print 2>/dev/null || true
 
       # ----------------------------------------------------------
+      # Build 3rd party libraries
+      # ----------------------------------------------------------
+      - name: Build 3rd party libraries
+        run: |
+          make -f build/main.mk 3rdparty \
+            OPENMSX_TARGET_CPU=arm \
+            OPENMSX_TARGET_OS=linux \
+            OPENMSX_FLAVOUR=opt \
+            PYTHON=python3
+
+      # ----------------------------------------------------------
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
