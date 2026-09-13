@@ -148,6 +148,13 @@ jobs:
           echo "OPENMSX_FLAVOUR=$OPENMSX_FLAVOUR"
 
       # ----------------------------------------------------------
+      # Clean
+      # ----------------------------------------------------------
+      - name: Clean previous 3rdparty build
+        run: |
+          rm -rf derived/arm-linux-opt-3rd/3rdparty
+
+      # ----------------------------------------------------------
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
