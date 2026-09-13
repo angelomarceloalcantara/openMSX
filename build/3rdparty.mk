@@ -299,18 +299,13 @@ $(BUILD_DIR)/$(PACKAGE_GLEW)/Makefile: \
 	rm -rf $(@D)
 	cp -r $(<D) $(@D)
 
-# GLEW does not have a configure script to pass CFLAGS to.
+# GLEW - Raspberry Pi Zero ARMv6
 MAKEVAR_OVERRIDE_GLEW:= \
 	CC="$(_CC) $(_CFLAGS)" \
 	LD="$(_CC) $(_LDFLAGS)" \
-	CFLAGS="$(_CFLAGS) -DGLEW_NO_GLU"
+	CFLAGS="$(_CFLAGS) -DGLEW_NO_GLU -Iinclude"
 
-# Tell GLEW to cross compile.
-ifeq ($(TRIPLE_OS),mingw32)
-MAKEVAR_OVERRIDE_GLEW+=SYSTEM=linux-mingw64
-else
-MAKEVAR_OVERRIDE_GLEW+=SYSTEM=$(TRIPLE_OS)
-endif
+MAKEVAR_OVERRIDE_GLEW+=SYSTEM=linux
 
 # Configure Tcl.
 # Note: Tcl 8.6 includes some bundled extensions. We don't want these and there
