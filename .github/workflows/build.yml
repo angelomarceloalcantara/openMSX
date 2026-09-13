@@ -153,20 +153,6 @@ jobs:
           rm -rf derived/arm-linux-opt-3rd/3rdparty
 
       # ----------------------------------------------------------
-      # Debug GLEW/OpenGL
-      # ----------------------------------------------------------
-      - name: Debug GLEW
-        run: |
-          echo "===== GLEW glxew.h ====="
-          sed -n '80,110p' derived/3rdparty/src/glew-2.2.0/include/GL/glxew.h
-          
-          echo "===== GLEW glew.c ====="
-          sed -n '40,70p' derived/3rdparty/src/glew-2.2.0/src/glew.c
-          
-          echo "===== GLEW references ====="
-          grep -R -n "GLEW_NO_GLX\|glxew.h" derived/3rdparty/src/glew-2.2.0/include/GL derived/3rdparty/src/glew-2.2.0/src
-
-      # ----------------------------------------------------------
       # Build 3rd party libraries
       # ----------------------------------------------------------
       - name: Build 3rd party libraries
@@ -176,6 +162,27 @@ jobs:
             OPENMSX_TARGET_OS=linux \
             OPENMSX_FLAVOUR=opt \
             PYTHON=python3
+
+      # ----------------------------------------------------------
+      # Debug GLEW
+      # ----------------------------------------------------------
+      - name: Debug GLEW
+        run: |
+          echo "===== GLEW BUILD DIRECTORY ====="
+          ls -la derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0
+
+          echo "===== GLEW glxew.h ====="
+          sed -n '80,110p' \
+            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/include/GL/glxew.h
+
+          echo "===== GLEW glew.c ====="
+          sed -n '40,70p' \
+            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/src/glew.c
+
+          echo "===== GLEW references ====="
+          grep -R -n "GLEW_NO_GLX\|glxew.h" \
+            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/include/GL \
+            derived/arm-linux-opt-3rd/3rdparty/build/glew-2.2.0/src
 
       # ----------------------------------------------------------
       # Build
