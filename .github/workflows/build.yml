@@ -81,6 +81,9 @@ jobs:
   # ============================================================
   # Raspberry Pi Zero - ARMv6 / ARMHF
   # ============================================================
+  # ============================================================
+  # Raspberry Pi Zero - ARMv6 / ARMHF
+  # ============================================================
   build-armhf:
     runs-on: ubuntu-24.04
 
@@ -92,67 +95,106 @@ jobs:
       CC: arm-linux-gnueabihf-gcc
       CXX: arm-linux-gnueabihf-g++
 
+      CFLAGS: >-
+        -march=armv6
+        -mfpu=vfp
+        -mfloat-abi=hard
+
       CXXFLAGS: >-
         -march=armv6
         -mfpu=vfp
         -mfloat-abi=hard
 
     steps:
+
+      # --------------------------------------------------------
+      # Checkout
+      # --------------------------------------------------------
       - name: Checkout source
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
+      # --------------------------------------------------------
+      # Instalar somente ferramentas do host + cross compiler
+      # --------------------------------------------------------
       - name: Install ARM cross compiler
         run: |
           sudo apt-get update
+
           sudo apt-get install -y \
             build-essential \
             gcc-arm-linux-gnueabihf \
             g++-arm-linux-gnueabihf \
-            libc6-dev-armhf-cross \
             make \
             python3 \
             pkg-config
 
+      # --------------------------------------------------------
+      # Verificar compilador ARM
+      # --------------------------------------------------------
       - name: Show ARM compiler
         run: |
           echo "GCC:"
           arm-linux-gnueabihf-gcc --version
+
           echo
           echo "G++:"
           arm-linux-gnueabihf-g++ --version
+
           echo
-          echo "Compiler architecture:"
-          arm-linux-gnueabihf-g++ \
+          echo "Target:"
+          arm-linux-gnueabihf-gcc -dumpmachine
+
+          echo
+          echo "Architecture:"
+          arm-linux-gnueabihf-gcc \
             -march=armv6 \
             -mfpu=vfp \
             -mfloat-abi=hard \
             -dM -E - < /dev/null | \
             grep -E '__arm__|__ARM_ARCH'
 
+      # --------------------------------------------------------
+      # Configurar openMSX
+      # --------------------------------------------------------
       - name: Configure ARM
         run: |
           ./configure
 
+      # --------------------------------------------------------
+      # Mostrar configuração
+      # --------------------------------------------------------
       - name: Show openMSX configuration
         run: |
           make -f build/main.mk config
 
+      # --------------------------------------------------------
+      # Compilar
+      # --------------------------------------------------------
       - name: Build static ARM distribution
         run: |
           make -j$(nproc) staticbindist
 
+      # --------------------------------------------------------
+      # Verificar arquivos
+      # --------------------------------------------------------
       - name: Find generated files
         run: |
           echo "Generated files:"
           find derived -type f -maxdepth 6 -print | sort
 
+      # --------------------------------------------------------
+      # Confirmar arquitetura dos executáveis
+      # --------------------------------------------------------
       - name: Verify ARM architecture
         run: |
           echo "ARM executables:"
           find derived -type f -executable -exec file {} \;
 
+      # --------------------------------------------------------
+      # Publicar artefato
+      # --------------------------------------------------------
       - name: Upload openMSX ARM
         uses: actions/upload-artifact@v4
         with:
