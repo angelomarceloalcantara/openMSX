@@ -110,7 +110,8 @@ jobs:
         -marm
         -mfpu=vfp
         -mfloat-abi=hard
-
+        -DGLEW_NO_GLU
+    
     steps:
 
       # ----------------------------------------------------------
