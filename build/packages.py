@@ -185,7 +185,7 @@ class Vorbis(DownloadablePackage):
 		return 'VORBIS'
 
 class ZLib(DownloadablePackage):
-	downloadURL = 'https://zlib.net/fossils/'
+	downloadURL = 'https://zlib.net/fossils'
 	niceName = 'zlib'
 	sourceName = 'zlib'
 	version = '1.3.1'
