@@ -1,4 +1,3 @@
-```yaml
 name: Build openMSX MSX2++
 
 on:
@@ -270,4 +269,3 @@ jobs:
           path: |
             derived/arm-linux-opt/bindist/**
           if-no-files-found: error
-```
