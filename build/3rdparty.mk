@@ -258,11 +258,18 @@ $(BUILD_DIR)/$(PACKAGE_ZLIB)/Makefile: \
 	cd $(@D) && ./configure \
 		--prefix=$(PWD)/$(INSTALL_DIR) \
 		--libdir=$(PWD)/$(INSTALL_DIR)/lib \
-		--static
-# It is not possible to pass CFLAGS to zlib's configure.
-MAKEVAR_OVERRIDE_ZLIB:=CFLAGS="$(_CFLAGS)"
-# Note: zlib's Makefile uses LDFLAGS to link its examples, not the library
-#       itself. If we mess with it, the build breaks.
+		--static \
+		CC="$(CC)" \
+		AR="$(AR)" \
+		RANLIB="$(RANLIB)"
+
+# zlib does not accept CFLAGS in its configure script.
+# Pass the cross-compiler and ARM flags when building.
+MAKEVAR_OVERRIDE_ZLIB:= \
+	CC="$(CC)" \
+	AR="$(AR)" \
+	RANLIB="$(RANLIB)" \
+	CFLAGS="$(_CFLAGS)"
 
 # Don't configure GLEW.
 # GLEW does not support building outside of the source tree, so just copy
