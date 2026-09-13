@@ -57,6 +57,7 @@ jobs:
             gcc-arm-linux-gnueabihf \
             g++-arm-linux-gnueabihf \
             libc6-dev-armhf-cross \
+            libx11-dev:armhf \
             make \
             python3 \
             pkg-config
