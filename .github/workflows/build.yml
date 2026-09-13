@@ -169,6 +169,20 @@ jobs:
           grep -nEi 'glew|opengl|gl' derived/arm-linux-opt-3rd/config/components_defs.mk 2>/dev/null || true
 
       # ----------------------------------------------------------
+      # Debug 3rdparty
+      # ----------------------------------------------------------
+      - name: Debug 3rdparty configuration
+        run: |
+          echo "=== 3rdparty.mk: GLEW ==="
+          grep -nEi 'glew|opengl' build/3rdparty.mk || true
+          
+          echo "=== files related to GLEW ==="
+          find 3rdparty -type f | grep -Ei 'glew|opengl' | head -100 || true
+          
+          echo "=== components.py: GLEW ==="
+          grep -RniEi 'glew|opengl' build/components.py build/*.py 2>/dev/null || true
+
+      # ----------------------------------------------------------
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
