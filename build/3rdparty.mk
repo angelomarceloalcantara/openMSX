@@ -153,7 +153,8 @@ $(INSTALL_BUILD_TARGETS): $(TIMESTAMP_DIR)/install-%: $(TIMESTAMP_DIR)/build-%
 
 # Build.
 $(BUILD_TARGETS): $(TIMESTAMP_DIR)/build-%: $(BUILD_DIR)/%/Makefile
-	$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*))
+#	$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*))
+    $(MAKE) -C $(@D) glew.lib.static $(MAKEVAR_OVERRIDE_GLEW) SYSTEM=linux
 	mkdir -p $(@D)
 	touch $@
 
@@ -280,7 +281,9 @@ $(BUILD_DIR)/$(PACKAGE_GLEW)/Makefile: \
 	rm -rf $(@D)
 	cp -r $(<D) $(@D)
 # GLEW does not have a configure script to pass CFLAGS to.
-MAKEVAR_OVERRIDE_GLEW:=CC="$(_CC) $(_CFLAGS)" LD="$(_CC) $(_LDFLAGS)"
+MAKEVAR_OVERRIDE_GLEW:= \
+	CC="$(_CC) $(_CFLAGS)" \
+	LD="$(_CC) $(_LDFLAGS)"
 # Tell GLEW to cross compile.
 ifeq ($(TRIPLE_OS),mingw32)
 MAKEVAR_OVERRIDE_GLEW+=SYSTEM=linux-mingw64
