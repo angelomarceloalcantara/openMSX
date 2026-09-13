@@ -151,20 +151,16 @@ $(INSTALL_BUILD_TARGETS): $(TIMESTAMP_DIR)/install-%: $(TIMESTAMP_DIR)/build-%
 	mkdir -p $(@D)
 	touch $@
 
-# Build GLEW static only.
-# The shared GLEW library requires target-side libGL/libX11,
-# which are not available during ARM cross-compilation.
-$(TIMESTAMP_DIR)/build-$(PACKAGE_GLEW): \
-  $(BUILD_DIR)/$(PACKAGE_GLEW)/Makefile
+# GLEW must be built static-only when cross-compiling.
+define BUILD_COMMAND_GLEW
 	$(MAKE) -C $(BUILD_DIR)/$(PACKAGE_GLEW) \
 		glew.lib.static \
 		$(MAKEVAR_OVERRIDE_GLEW)
-	mkdir -p $(@D)
-	touch $@
+endef
 
 # Build.
 $(BUILD_TARGETS): $(TIMESTAMP_DIR)/build-%: $(BUILD_DIR)/%/Makefile
-	$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*))
+	$(if $(filter $(PACKAGE_GLEW),$*),$(BUILD_COMMAND_GLEW),$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)))
 	mkdir -p $(@D)
 	touch $@
 
