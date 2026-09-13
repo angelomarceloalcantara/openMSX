@@ -81,9 +81,6 @@ jobs:
   # ============================================================
   # Raspberry Pi Zero - ARMv6 / ARMHF
   # ============================================================
-  # ============================================================
-  # Raspberry Pi Zero - ARMv6 / ARMHF
-  # ============================================================
   build-armhf:
     runs-on: ubuntu-24.04
 
@@ -107,16 +104,13 @@ jobs:
 
     steps:
 
-      # --------------------------------------------------------
-      # Checkout
-      # --------------------------------------------------------
       - name: Checkout source
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
       # --------------------------------------------------------
-      # Instalar somente ferramentas do host + cross compiler
+      # Ferramentas do HOST + cross compiler ARM
       # --------------------------------------------------------
       - name: Install ARM cross compiler
         run: |
@@ -126,21 +120,21 @@ jobs:
             build-essential \
             gcc-arm-linux-gnueabihf \
             g++-arm-linux-gnueabihf \
+            libc6-dev-armhf-cross \
             make \
             python3 \
             pkg-config
 
       # --------------------------------------------------------
-      # Verificar compilador ARM
+      # Verificar o compilador
       # --------------------------------------------------------
       - name: Show ARM compiler
         run: |
-          echo "GCC:"
-          arm-linux-gnueabihf-gcc --version
+          echo "========================================"
+          echo "ARM GCC"
+          echo "========================================"
 
-          echo
-          echo "G++:"
-          arm-linux-gnueabihf-g++ --version
+          arm-linux-gnueabihf-gcc --version
 
           echo
           echo "Target:"
@@ -156,7 +150,7 @@ jobs:
             grep -E '__arm__|__ARM_ARCH'
 
       # --------------------------------------------------------
-      # Configurar openMSX
+      # Configuração
       # --------------------------------------------------------
       - name: Configure ARM
         run: |
@@ -185,7 +179,7 @@ jobs:
           find derived -type f -maxdepth 6 -print | sort
 
       # --------------------------------------------------------
-      # Confirmar arquitetura dos executáveis
+      # Verificar arquitetura dos executáveis
       # --------------------------------------------------------
       - name: Verify ARM architecture
         run: |
@@ -193,12 +187,12 @@ jobs:
           find derived -type f -executable -exec file {} \;
 
       # --------------------------------------------------------
-      # Publicar artefato
+      # Publicar resultado
       # --------------------------------------------------------
       - name: Upload openMSX ARM
         uses: actions/upload-artifact@v4
         with:
           name: openMSX-msx2pp-linux-armhf
           path: |
-            derived/arm-linux-opt/bindist/**
+            derived/**/bindist/**
           if-no-files-found: error
