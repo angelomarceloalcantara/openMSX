@@ -1,3 +1,4 @@
+```yaml
 name: Build openMSX MSX2++
 
 on:
@@ -20,7 +21,6 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-
           sudo apt-get install -y \
             build-essential \
             g++ \
@@ -89,29 +89,49 @@ jobs:
       OPENMSX_TARGET_OS: linux
       OPENMSX_FLAVOUR: opt
 
+      # Cross compiler
       CC: arm-linux-gnueabihf-gcc
       CXX: arm-linux-gnueabihf-g++
 
+      # Raspberry Pi Zero / ARMv6
+      #
+      # -march=armv6  -> ARMv6
+      # -marm         -> ARM mode, não Thumb-1
+      # -mfpu=vfp     -> VFP
+      # -mfloat-abi=hard -> hard-float ABI
+      #
       CFLAGS: >-
         -march=armv6
+        -marm
         -mfpu=vfp
         -mfloat-abi=hard
 
       CXXFLAGS: >-
         -march=armv6
+        -marm
         -mfpu=vfp
         -mfloat-abi=hard
 
     steps:
 
+      # ----------------------------------------------------------
+      # Source
+      # ----------------------------------------------------------
       - name: Checkout source
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # --------------------------------------------------------
-      # Ferramentas do HOST + cross compiler ARM
-      # --------------------------------------------------------
+
+      # ----------------------------------------------------------
+      # ARM cross compiler
+      #
+      # IMPORTANTE:
+      # Não usar dpkg --add-architecture armhf.
+      # Não instalar pacotes :armhf.
+      #
+      # Estamos fazendo cross-compilação.
+      # ----------------------------------------------------------
       - name: Install ARM cross compiler
         run: |
           sudo apt-get update
@@ -125,109 +145,129 @@ jobs:
             python3 \
             pkg-config
 
-      # --------------------------------------------------------
-      # Verificar o compilador
-      # --------------------------------------------------------
-      - name: Show ARM compiler
-        run: |
-          echo "========================================"
-          echo "ARM GCC"
-          echo "========================================"
 
-          arm-linux-gnueabihf-gcc --version
-
-          echo
-          echo "Target:"
-          arm-linux-gnueabihf-gcc -dumpmachine
-
-          echo
-          echo "Architecture:"
-          arm-linux-gnueabihf-gcc \
-            -march=armv6 \
-            -mfpu=vfp \
-            -mfloat-abi=hard \
-            -dM -E - < /dev/null | \
-            grep -E '__arm__|__ARM_ARCH'
-
-      # --------------------------------------------------------
-      # Configuração
-      # --------------------------------------------------------
-      - name: Configure ARM
-        run: |
-          ./configure
-
-      # --------------------------------------------------------
-      # Mostrar configuração
-      # --------------------------------------------------------
-      - name: Show openMSX configuration
-        run: |
-          make -f build/main.mk config
-
+      # ----------------------------------------------------------
+      # Verify host/target toolchains
+      # ----------------------------------------------------------
       - name: Debug ARM toolchain
         run: |
-          echo "=== HOST ==="
+          echo "========================================"
+          echo "HOST"
+          echo "========================================"
+
           gcc -dumpmachine
           g++ -dumpmachine
 
           echo
-          echo "=== TARGET ==="
+          echo "========================================"
+          echo "TARGET"
+          echo "========================================"
+
           arm-linux-gnueabihf-gcc -dumpmachine
           arm-linux-gnueabihf-g++ -dumpmachine
 
           echo
-          echo "=== ARM FLAGS ==="
+          echo "========================================"
+          echo "ARM FLAGS"
+          echo "========================================"
+
           echo | arm-linux-gnueabihf-gcc \
             -march=armv6 \
+            -marm \
             -mfpu=vfp \
             -mfloat-abi=hard \
             -dM -E - | \
             grep -E '(__arm__|__ARM_ARCH|__ARM_PCS_VFP)'
 
           echo
-          echo "=== TEST ARM C ==="
+          echo "========================================"
+          echo "TEST ARM C"
+          echo "========================================"
+
           cat > /tmp/test.c <<'EOF'
-          int main(void) { return 0; }
+          int main(void)
+          {
+              return 0;
+          }
           EOF
 
           arm-linux-gnueabihf-gcc \
             -march=armv6 \
+            -marm \
             -mfpu=vfp \
             -mfloat-abi=hard \
             /tmp/test.c \
             -o /tmp/test-arm
 
+          echo
+          echo "Generated ARM executable:"
           file /tmp/test-arm
 
-      # --------------------------------------------------------
-      # Compilar
-      # --------------------------------------------------------
+
+      # ----------------------------------------------------------
+      # Configure openMSX
+      # ----------------------------------------------------------
+      - name: Configure ARM
+        run: |
+          ./configure
+
+
+      # ----------------------------------------------------------
+      # Show openMSX configuration
+      # ----------------------------------------------------------
+      - name: Show openMSX configuration
+        run: |
+          make -f build/main.mk config
+
+
+      # ----------------------------------------------------------
+      # Show relevant compiler variables
+      # ----------------------------------------------------------
+      - name: Show build environment
+        run: |
+          echo "CC=$CC"
+          echo "CXX=$CXX"
+          echo "CFLAGS=$CFLAGS"
+          echo "CXXFLAGS=$CXXFLAGS"
+          echo "OPENMSX_TARGET_CPU=$OPENMSX_TARGET_CPU"
+          echo "OPENMSX_TARGET_OS=$OPENMSX_TARGET_OS"
+          echo "OPENMSX_FLAVOUR=$OPENMSX_FLAVOUR"
+
+
+      # ----------------------------------------------------------
+      # Build
+      # ----------------------------------------------------------
       - name: Build static ARM distribution
         run: |
           make -j$(nproc) staticbindist
 
-      # --------------------------------------------------------
-      # Verificar arquivos
-      # --------------------------------------------------------
+
+      # ----------------------------------------------------------
+      # Show generated files
+      # ----------------------------------------------------------
       - name: Find generated files
         run: |
           echo "Generated files:"
           find derived -type f -maxdepth 6 -print | sort
 
-      # --------------------------------------------------------
-      # Verificar arquitetura dos executáveis
-      # --------------------------------------------------------
+
+      # ----------------------------------------------------------
+      # Verify architecture
+      # ----------------------------------------------------------
       - name: Verify ARM architecture
         run: |
           echo "ARM executables:"
           find derived -type f -executable -exec file {} \;
 
-      # --------------------------------------------------------
-      # Publicar resultado
-      # --------------------------------------------------------
+
+      # ----------------------------------------------------------
+      # Upload ARM distribution
+      # ----------------------------------------------------------
       - name: Upload openMSX ARM
         uses: actions/upload-artifact@v4
         with:
           name: openMSX-msx2pp-linux-armhf
           path: |
-            derived/**/bindist/**
+            derived/arm-linux-opt/bindist/**
           if-no-files-found: error
+```
