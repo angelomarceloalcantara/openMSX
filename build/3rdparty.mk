@@ -97,17 +97,8 @@ export WINDRES
 export RC:=$(WINDRES)
 endif
 
-# Although X11 is available on Windows and Mac OS X, most people do not have
-# it installed, so do not link against it.
-ifeq ($(OPENMSX_TARGET_OS),linux)
+# Raspberry Pi Zero ARMv6 build: disable X11
 USE_VIDEO_X11:=disable
-else
-ifeq ($(filter freebsd netbsd openbsd gnu,$(OPENMSX_TARGET_OS)),)
-USE_VIDEO_X11:=disable
-else
-USE_VIDEO_X11:=enable
-endif
-endif
 
 ifeq ($(OPENMSX_TARGET_OS),android)
 # SDL2's top-level Makefile does not build the platform glue, so linking will fail.
