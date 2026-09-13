@@ -298,10 +298,13 @@ $(BUILD_DIR)/$(PACKAGE_GLEW)/Makefile: \
 	mkdir -p $(dir $(@D))
 	rm -rf $(@D)
 	cp -r $(<D) $(@D)
+
 # GLEW does not have a configure script to pass CFLAGS to.
 MAKEVAR_OVERRIDE_GLEW:= \
 	CC="$(_CC) $(_CFLAGS)" \
-	LD="$(_CC) $(_LDFLAGS)"
+	LD="$(_CC) $(_LDFLAGS)" \
+	CFLAGS="$(_CFLAGS) -DGLEW_NO_GLU"
+
 # Tell GLEW to cross compile.
 ifeq ($(TRIPLE_OS),mingw32)
 MAKEVAR_OVERRIDE_GLEW+=SYSTEM=linux-mingw64
