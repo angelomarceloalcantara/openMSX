@@ -145,9 +145,17 @@ clean:
 
 # Install.
 $(INSTALL_BUILD_TARGETS): $(TIMESTAMP_DIR)/install-%: $(TIMESTAMP_DIR)/build-%
-	$(MAKE) -C $(BUILD_DIR)/$* install \
-		$(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)) \
-		$(INSTALL_PARAMS_$(call findpackage,PACKAGE,$*))
+	if [ "$*" = "$(PACKAGE_GLEW)" ]; then \
+		$(MAKE) -C $(BUILD_DIR)/$* install.include install.pkgconfig \
+			$(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)) \
+			$(INSTALL_PARAMS_$(call findpackage,PACKAGE,$*)); \
+		mkdir -p $(INSTALL_DIR)/lib; \
+		cp $(BUILD_DIR)/$*/lib/libGLEW.a $(INSTALL_DIR)/lib/; \
+	else \
+		$(MAKE) -C $(BUILD_DIR)/$* install \
+			$(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*)) \
+			$(INSTALL_PARAMS_$(call findpackage,PACKAGE,$*)); \
+	fi
 	mkdir -p $(@D)
 	touch $@
 
