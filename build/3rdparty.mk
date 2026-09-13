@@ -153,7 +153,7 @@ $(INSTALL_BUILD_TARGETS): $(TIMESTAMP_DIR)/install-%: $(TIMESTAMP_DIR)/build-%
 
 # Build.
 $(BUILD_TARGETS): $(TIMESTAMP_DIR)/build-%: $(BUILD_DIR)/%/Makefile
-    $(MAKE) -C $(@D) glew.lib.static $(MAKEVAR_OVERRIDE_GLEW) SYSTEM=linux
+	$(MAKE) -C $(<D) $(MAKEVAR_OVERRIDE_$(call findpackage,PACKAGE,$*))
 	mkdir -p $(@D)
 	touch $@
 
