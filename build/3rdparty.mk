@@ -99,10 +99,14 @@ endif
 
 # Although X11 is available on Windows and Mac OS X, most people do not have
 # it installed, so do not link against it.
-ifeq ($(filter linux freebsd netbsd openbsd gnu,$(OPENMSX_TARGET_OS)),)
+ifeq ($(OPENMSX_TARGET_OS),linux)
+USE_VIDEO_X11:=disable
+else
+ifeq ($(filter freebsd netbsd openbsd gnu,$(OPENMSX_TARGET_OS)),)
 USE_VIDEO_X11:=disable
 else
 USE_VIDEO_X11:=enable
+endif
 endif
 
 ifeq ($(OPENMSX_TARGET_OS),android)
