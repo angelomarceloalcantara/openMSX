@@ -201,6 +201,23 @@ jobs:
           cat derived/arm-linux-opt-3rd/config/components_defs.mk 2>/dev/null || true
 
       # ----------------------------------------------------------
+      # DEBUG GLEW configuration
+      # ----------------------------------------------------------
+      - name: DEBUG GLEW configuration
+        run: |
+          echo "=== build/3rdparty.mk 285-315 ==="
+          nl -ba build/3rdparty.mk | sed -n '285,315p'
+          
+          echo "=== derived 3rdparty directories ==="
+          find derived/arm-linux-opt-3rd/3rdparty -maxdepth 4 -type d -print 2>/dev/null || true
+          
+          echo "=== GLEW source/build/install ==="
+          find derived/arm-linux-opt-3rd/3rdparty \
+          -type f \
+          \( -name 'libGLEW.a' -o -name 'glew.h' -o -name 'Makefile' \) \
+          -print 2>/dev/null || true
+
+      # ----------------------------------------------------------
       # Build
       # ----------------------------------------------------------
       - name: Build static ARM distribution
