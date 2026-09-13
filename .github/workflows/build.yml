@@ -163,6 +163,41 @@ jobs:
         run: |
           make -f build/main.mk config
 
+      - name: Debug ARM toolchain
+        run: |
+          echo "=== HOST ==="
+          gcc -dumpmachine
+          g++ -dumpmachine
+
+          echo
+          echo "=== TARGET ==="
+          arm-linux-gnueabihf-gcc -dumpmachine
+          arm-linux-gnueabihf-g++ -dumpmachine
+
+          echo
+          echo "=== ARM FLAGS ==="
+          echo | arm-linux-gnueabihf-gcc \
+            -march=armv6 \
+            -mfpu=vfp \
+            -mfloat-abi=hard \
+            -dM -E - | \
+            grep -E '(__arm__|__ARM_ARCH|__ARM_PCS_VFP)'
+
+          echo
+          echo "=== TEST ARM C ==="
+          cat > /tmp/test.c <<'EOF'
+          int main(void) { return 0; }
+          EOF
+
+          arm-linux-gnueabihf-gcc \
+            -march=armv6 \
+            -mfpu=vfp \
+            -mfloat-abi=hard \
+            /tmp/test.c \
+            -o /tmp/test-arm
+
+          file /tmp/test-arm
+
       # --------------------------------------------------------
       # Compilar
       # --------------------------------------------------------
