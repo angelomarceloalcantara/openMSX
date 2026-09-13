@@ -153,60 +153,18 @@ jobs:
           rm -rf derived/arm-linux-opt-3rd/3rdparty
 
       # ----------------------------------------------------------
-      # Debug 3rdparty
-      # ----------------------------------------------------------
-      - name: Debug 3rdparty configuration
-        run: |
-          echo "=== 3rdparty.mk: GLEW ==="
-          grep -nEi 'glew|opengl' build/3rdparty.mk || true
-          
-          echo "=== files related to GLEW ==="
-          find 3rdparty -type f | grep -Ei 'glew|opengl' | head -100 || true
-          
-          echo "=== components.py: GLEW ==="
-          grep -RniEi 'glew|opengl' build/components.py build/*.py 2>/dev/null || true
-
-      # ----------------------------------------------------------
       # Debug GLEW/OpenGL
       # ----------------------------------------------------------
-      - name: Debug GLEW/OpenGL link flags
+      - name: Debug GLEW
         run: |
-          echo "=== LIBRARY_LINK_FLAGS ==="
-          grep -R "LIBRARY_LINK_FLAGS" derived/arm-linux-opt-3rd/config 2>/dev/null || true
+          echo "===== GLEW glxew.h ====="
+          sed -n '80,110p' derived/3rdparty/src/glew-2.2.0/include/GL/glxew.h
           
-          echo "=== GLEW files ==="
-          find derived/arm-linux-opt-3rd/3rdparty -iname '*glew*' -o -iname 'libGLEW*' 2>/dev/null | head -50
+          echo "===== GLEW glew.c ====="
+          sed -n '40,70p' derived/3rdparty/src/glew-2.2.0/src/glew.c
           
-          echo "=== components_defs.mk ==="
-          grep -nEi 'glew|opengl|gl' derived/arm-linux-opt-3rd/config/components_defs.mk 2>/dev/null || true
-
-      # ----------------------------------------------------------
-      # DEBUG GLEW configuration
-      # ----------------------------------------------------------
-      - name: DEBUG GLEW configuration
-        run: |
-          echo "=== build/3rdparty.mk 285-315 ==="
-          nl -ba build/3rdparty.mk | sed -n '285,315p'
-          
-          echo "=== derived 3rdparty directories ==="
-          find derived/arm-linux-opt-3rd/3rdparty -maxdepth 4 -type d -print 2>/dev/null || true
-          
-          echo "=== GLEW source/build/install ==="
-          find derived/arm-linux-opt-3rd/3rdparty \
-          -type f \
-          \( -name 'libGLEW.a' -o -name 'glew.h' -o -name 'Makefile' \) \
-          -print 2>/dev/null || true
-
-      # ----------------------------------------------------------
-      # Test zlib download
-      # ----------------------------------------------------------
-      - name: Test zlib download
-        run: |
-          rm -f /tmp/zlib.tar.gz
-          wget -O /tmp/zlib.tar.gz https://zlib.net/fossils/zlib-1.3.1.tar.gz
-          file /tmp/zlib.tar.gz
-          ls -lh /tmp/zlib.tar.gz
-          head -c 100 /tmp/zlib.tar.gz | xxd
+          echo "===== GLEW references ====="
+          grep -R -n "GLEW_NO_GLX\|glxew.h" derived/3rdparty/src/glew-2.2.0/include/GL derived/3rdparty/src/glew-2.2.0/src
 
       # ----------------------------------------------------------
       # Build 3rd party libraries
