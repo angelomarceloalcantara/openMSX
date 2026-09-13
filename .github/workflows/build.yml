@@ -103,26 +103,14 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install ARM cross compiler and dependencies
+      - name: Install ARM cross compiler
         run: |
-          sudo dpkg --add-architecture armhf
           sudo apt-get update
-
           sudo apt-get install -y \
             build-essential \
             gcc-arm-linux-gnueabihf \
             g++-arm-linux-gnueabihf \
             libc6-dev-armhf-cross \
-            libx11-dev:armhf \
-            libxext-dev:armhf \
-            libxfixes-dev:armhf \
-            libxrandr-dev:armhf \
-            libxi-dev:armhf \
-            libxrender-dev:armhf \
-            libxcursor-dev:armhf \
-            libxinerama-dev:armhf \
-            libgl1-mesa-dev:armhf \
-            libglu1-mesa-dev:armhf \
             make \
             python3 \
             pkg-config
