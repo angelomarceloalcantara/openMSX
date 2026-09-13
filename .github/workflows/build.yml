@@ -140,10 +140,10 @@ jobs:
             gcc-arm-linux-gnueabihf \
             g++-arm-linux-gnueabihf \
             libc6-dev-armhf-cross \
+            libx11-dev \
             make \
             python3 \
             pkg-config
-
 
       # ----------------------------------------------------------
       # Verify host/target toolchains
