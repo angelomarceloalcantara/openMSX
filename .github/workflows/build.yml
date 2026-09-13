@@ -228,9 +228,15 @@ jobs:
           set -e
 
           export LIBRARY_PATH="/usr/lib/arm-linux-gnueabihf:/usr/lib/gcc-cross/arm-linux-gnueabihf/13"
-
           export LDFLAGS="-L/usr/lib/arm-linux-gnueabihf"
-
+          
+          echo "===== GLEW CONFIG ====="
+          grep -n "GLEW_NO_GLX\|GLEW_NO_GLU" derived/3rdparty/src/glew-2.2.0/include/GL/*.h
+          echo "===== glxew.h ====="
+          sed -n '80,110p' derived/3rdparty/src/glew-2.2.0/include/GL/glxew.h
+          echo "===== glew.c ====="
+          sed -n '40,65p' derived/3rdparty/src/glew-2.2.0/src/glew.c
+          
           make V=1 -j8 staticbindist \
             CC=arm-linux-gnueabihf-gcc \
             CXX=arm-linux-gnueabihf-g++ \
